@@ -7,21 +7,21 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     continue-on-error: ${{ matrix.experimental || false }}
 
     strategy:
       matrix:
         rust:
-          - 1.62.0
+          - 1.78.0
           - nightly
         include:
           - rust: nightly
             experimental: true
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -29,7 +29,7 @@ jobs:
           profile: minimal
           toolchain: ${{ matrix.rust }}
           override: true
-          components: rustfmt, clippy, llvm-tools-preview
+          components: rustfmt, clippy, llvm-tools
           target: thumbv7m-none-eabi
 
       - name: Install Python dependencies
@@ -37,7 +37,7 @@ jobs:
           pip3 install --user python-dateutil linkchecker
 
       - name: Cache installed binaries
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         id: cache-bin
         with:
           path: ~/cache-bin
@@ -84,17 +84,17 @@ jobs:
           RUST_VERSION: ${{ matrix.rust }}
 
   deploy:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     needs: [build]
 
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Cache installed binaries
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         id: cache-bin
         with:
           path: ~/cache-bin
@@ -107,7 +107,7 @@ jobs:
         run: mdbook build
 
       - name: Deploy book
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: book
