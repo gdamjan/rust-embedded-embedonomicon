@@ -86,7 +86,7 @@ $ rustup target add thumbv7m-none-eabi
 $ # cargo-binutils
 $ cargo install cargo-binutils
 
-$ rustup component add llvm-tools-preview
+$ rustup component add llvm-tools
 
 ```
 
